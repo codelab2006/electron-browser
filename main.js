@@ -1,5 +1,6 @@
 const { app, BrowserWindow, ipcMain, Menu } = require("electron/main");
 const { join } = require("node:path");
+const { readFileSync } = require("node:fs");
 
 const createWindow = () => {
   let modal = null;
@@ -38,7 +39,17 @@ const createWindow = () => {
     dialog.once("ready-to-show", () => {
       dialog.show();
     });
-    dialog.loadFile("url.html");
+    const configPath = app.isPackaged
+      ? join(process.resourcesPath, "config.json")
+      : join(__dirname, "resources", "config.json");
+    let defaultUrl = "";
+    try {
+      const config = JSON.parse(readFileSync(configPath, "utf8"));
+      if (typeof config?.defaultUrl === "string") defaultUrl = config.defaultUrl;
+    } catch (error) {
+      console.error("Failed to load config:", error.message);
+    }
+    dialog.loadFile("url.html", { query: { url: defaultUrl } });
     dialog.on("closed", () => {
       if (modal === dialog) modal = null;
     });

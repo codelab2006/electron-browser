@@ -1,5 +1,6 @@
 const inputURL = document.getElementById("input-url");
 const goButton = document.getElementById("go");
+inputURL.value = new URLSearchParams(window.location.search).get("url") || "";
 inputURL.focus();
 inputURL.select();
 window.addEventListener("focus", () => inputURL.focus());

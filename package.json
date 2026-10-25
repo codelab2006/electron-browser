@@ -1,5 +1,5 @@
 {
-  "name": "electron-application",
+  "name": "application-cilent",
   "version": "1.0.0",
   "description": "N/A",
   "main": "main.js",
@@ -8,47 +8,40 @@
     "npm": ">=11.19.1"
   },
   "scripts": {
+    "postinstall": "node -e \"process.env.ELECTRON_MIRROR ||= 'https://npmmirror.com/mirrors/electron/'; require('electron/install.js')\"",
     "start": "electron-forge start",
     "package": "electron-forge package",
     "make": "electron-forge make",
-    "publish": "electron-forge publish"
+    "make:windows": "electron-forge make --platform=win32 --arch=x64",
+    "make:linux": "electron-forge make --platform=linux --arch=x64"
   },
   "author": "...",
   "devDependencies": {
     "@electron-forge/cli": "^8.0.1",
-    "@electron-forge/maker-deb": "^8.0.1",
-    "@electron-forge/maker-squirrel": "^8.0.1",
     "@electron-forge/maker-zip": "^8.0.1",
     "electron": "45.0.0"
   },
   "config": {
     "forge": {
-      "packagerConfig": {},
-      "makers": [
-        {
-          "name": "@electron-forge/maker-squirrel",
-          "config": {
-            "name": "electron_quick_start"
+      "packagerConfig": {
+        "asar": true,
+        "extraResource": ["resources/config.json"],
+        "ignore": ["^/resources/config\\.json$"],
+        "download": {
+          "mirrorOptions": {
+            "mirror": "https://npmmirror.com/mirrors/electron/"
           }
-        },
+        }
+      },
+      "makers": [
         {
           "name": "@electron-forge/maker-zip",
           "platforms": [
-            "darwin"
+            "win32",
+            "linux"
           ]
-        },
-        {
-          "name": "@electron-forge/maker-deb",
-          "config": {}
-        },
-        {
-          "name": "@electron-forge/maker-rpm",
-          "config": {}
         }
       ]
     }
-  },
-  "dependencies": {
-    "electron-squirrel-startup": "^1.0.1"
   }
 }
