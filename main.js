@@ -1,34 +1,46 @@
 const { app, BrowserWindow, ipcMain, Menu } = require("electron/main");
-const path = require("node:path");
+const { join } = require("node:path");
 
 const createWindow = () => {
   let modal = null;
   const win = new BrowserWindow({
     width: 1280,
     height: 800,
+    show: false,
     webPreferences: {
-      preload: path.join(__dirname, "preload.js"),
+      preload: join(__dirname, "preload.js"),
     },
     autoHideMenuBar: true,
   });
 
   const showURLDialog = () => {
+    if (modal && !modal.isDestroyed()) {
+      modal.focus();
+      return;
+    }
     modal = new BrowserWindow({
-      width: 300,
-      height: 50,
+      width: 600,
+      height: 230,
+      show: false,
+      useContentSize: true,
+      backgroundColor: "#f3f5f9",
       parent: win,
       modal: true,
+      alwaysOnTop: true,
       resizable: false,
       webPreferences: {
-        preload: path.join(__dirname, "preload.js"),
+        preload: join(__dirname, "preload.js"),
       },
     });
     modal.setMenu(null);
     modal.removeMenu();
-    modal.loadFile("url.html");
-    modal.on("close", () => {
-      modal.destroy();
-      modal = null;
+    const dialog = modal;
+    dialog.once("ready-to-show", () => {
+      dialog.show();
+    });
+    dialog.loadFile("url.html");
+    dialog.on("closed", () => {
+      if (modal === dialog) modal = null;
     });
   };
 
@@ -36,25 +48,40 @@ const createWindow = () => {
     Menu.buildFromTemplate([
       {
         label: "URL",
+        accelerator: "F1",
         click: () => showURLDialog(),
       },
       {
         label: "DevTool",
+        accelerator: "F12",
         click: () => {
           win.webContents.openDevTools();
         },
       },
     ])
   );
-  win.maximize();
+  win.once("ready-to-show", () => {
+    win.once("focus", () => {
+      if (win.isMaximized()) {
+        showURLDialog();
+      } else {
+        win.once("maximize", showURLDialog);
+        win.maximize();
+      }
+    });
+    win.show();
+  });
   win.loadFile("index.html");
 
   ipcMain.handle("go", (_, url) => {
-    modal.close();
-    win.loadURL(`http://${url}`);
+    const value = url.trim();
+    if (!value) return;
+    modal?.close();
+    win.loadURL(/^https?:\/\//i.test(value) ? value : `http://${value}`)
+      .catch(console.error);
   });
+  win.on("closed", () => ipcMain.removeHandler("go"));
 
-  showURLDialog();
 };
 
 app.whenReady().then(() => {

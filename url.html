@@ -1,26 +1,34 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta
-      http-equiv="Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'"
-    />
-    <meta
-      http-equiv="X-Content-Security-Policy"
-      content="default-src 'self'; script-src 'self'"
-    />
-    <title>Type a URL</title>
-    <link rel="stylesheet" href="bootstrap.min.css" />
-    <link rel="stylesheet" href="styles.css" />
-  </head>
-  <body>
-    <div id="url" class="content">
-      <input id="input-url" placeholder="URL" />
-      <button id="go">Go</button>
-    </div>
-    <script src="bootstrap.bundle.min.js"></script>
-    <script src="url.js"></script>
-  </body>
+<html lang="zh">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" />
+  <meta http-equiv="X-Content-Security-Policy"
+    content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'" />
+  <title>Open an application</title>
+  <link rel="stylesheet" href="bootstrap.min.css" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <main class="content"
+    style="background: #f3f5f9; padding: 30px; display: flex; align-items: center; justify-content: center;">
+    <section style="padding: 20px; background: #ffffff; width: 100%; height: 100%;">
+      <label for="input-url" class="form-label fw-semibold small">Application address</label>
+      <div class="d-flex gap-2">
+        <input id="input-url" class="form-control" style="min-width: 0;" type="text" inputmode="url" autocomplete="off"
+          autocapitalize="none" spellcheck="false" autofocus />
+        <button id="go" class="btn btn-primary px-4" type="button">Open</button>
+      </div>
+      <p id="url-hint" class="text-secondary mb-0 mt-3" style="font-size: 12px;">A hostname or full URL works. Press
+        <kbd>Enter</kbd> to open.
+      </p>
+    </section>
+  </main>
+  <script src="url.js"></script>
+</body>
+
 </html>
